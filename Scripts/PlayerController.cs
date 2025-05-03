@@ -4,15 +4,25 @@ using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Settings")]
     public float rotationAmount = 90f;
     public float moveDistance = 1f;
     public float rotationSmoothness = 5f;
     public float moveSmoothness = 5f;
-
+    public float raySphereRadius = 0.2f;
     public float jumpForce = 10f;
-    public Transform groundCheck;
-    public LayerMask groundLayer;
 
+    [Header("References")]
+    public Transform groundCheck;
+    public Transform defaultPoint;
+    public LayerMask groundLayer;
+    public bool isOnDefault = true;
+
+    [Header("Buttons")]
+    public GameObject rotateButton;
+    public GameObject teleportButton;
+
+    private Transform hitObject;
     private Quaternion targetRotation;
     private Vector3 targetPosition;
     private bool isJumping = false;
@@ -21,12 +31,19 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        hitObject = null;
         rb = GetComponent<Rigidbody>();
         targetPosition = transform.position;
         targetRotation = transform.rotation;
     }
 
     void Update()
+    {
+        HandleMovement();
+        HandleTeleportToLocation();
+    }
+
+    void HandleMovement()
     {
         bool wasGrounded = isGrounded;
         isGrounded = Physics.CheckSphere(groundCheck.position, 0.1f, groundLayer);    
@@ -67,18 +84,6 @@ public class PlayerController : MonoBehaviour
                 transform.position = roundedPos;
             }
         }
-
-        if(Input.GetKeyDown(KeyCode.G) && isGrounded)
-        {
-            if (!canAct) return;
-            canAct = false;
-
-            isJumping = true;
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-            targetRotation = transform.rotation * Quaternion.Euler(0, 180f, 0);
-
-            Invoke(nameof(ResetAction), 0.5f);
-        }
     }
 
     public void TurnLeft()
@@ -87,6 +92,7 @@ public class PlayerController : MonoBehaviour
         canAct = false;
 
         targetRotation = targetRotation * Quaternion.Euler(0, -rotationAmount, 0);
+        defaultPoint.localRotation = targetRotation;
         Invoke(nameof(ResetAction), 0.1f);
     }
 
@@ -96,7 +102,32 @@ public class PlayerController : MonoBehaviour
         canAct = false;
 
         targetRotation = targetRotation * Quaternion.Euler(0, rotationAmount, 0);
+        defaultPoint.localRotation = targetRotation;
         Invoke(nameof(ResetAction), 0.1f);
+    }
+
+    void HandleTeleportToLocation()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+        {
+            if (Physics.SphereCast(ray, raySphereRadius, out RaycastHit hitInfo, Mathf.Infinity))
+            {
+                hitObject = hit.transform;
+            }
+            else 
+            {
+                hitObject = null;   
+            }
+        }
+
+        if(isOnDefault)
+        {
+            if(hitObject)
+                teleportButton.SetActive(true);
+            else teleportButton.SetActive(false);
+        }
+        else teleportButton.SetActive(true);
     }
 
     public void MoveForward()
@@ -107,17 +138,25 @@ public class PlayerController : MonoBehaviour
         // targetPosition = targetPosition + transform.forward * moveDistance;
         // Invoke(nameof(ResetAction), 0.1f);
 
-        Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+        if(hitObject)
         {
-            Debug.Log("Casting Ray");
-            if (hit.collider.CompareTag("MovePoint"))
-            {
-                Debug.Log("Hit a MovePoint at " + hit.point);
-                transform.position = hit.transform.parent.position;
-                transform.rotation = hit.transform.parent.rotation;
-                Camera.main.transform.localEulerAngles = hit.transform.parent.GetComponent<MovePoint>().cameraRotation;
-            }   
+            if (rotateButton.activeSelf)
+                rotateButton.SetActive(false);
+
+            transform.position = hitObject.parent.position;
+            transform.rotation = hitObject.parent.rotation;
+            Camera.main.transform.localEulerAngles = hitObject.parent.GetComponent<MovePoint>().cameraRotation;
+            isOnDefault = false;
+        }
+        else if(!hitObject && !isOnDefault)
+        {
+            if (!rotateButton.activeSelf)
+                rotateButton.SetActive(true);
+            
+            transform.position = defaultPoint.transform.position;
+            transform.rotation = defaultPoint.transform.rotation;
+            Camera.main.transform.localEulerAngles = Vector3.zero;
+            isOnDefault = true;
         }
     }
 
