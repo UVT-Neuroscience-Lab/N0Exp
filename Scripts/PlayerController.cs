@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 10f;
 
     [Header("References")]
+    public Transform cam;
     public Transform groundCheck;
     public Transform defaultPoint;
     public LayerMask groundLayer;
@@ -109,16 +110,15 @@ public class PlayerController : MonoBehaviour
     void HandleTeleportToLocation()
     {
         Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+        
+        if (Physics.SphereCast(ray, raySphereRadius, out RaycastHit hit, Mathf.Infinity))
         {
-            if (Physics.SphereCast(ray, raySphereRadius, out RaycastHit hitInfo, Mathf.Infinity))
-            {
+            if(hit.collider.CompareTag("MovePoint"))
                 hitObject = hit.transform;
-            }
-            else 
-            {
-                hitObject = null;   
-            }
+        }
+        else 
+        {
+            hitObject = null;   
         }
 
         if(isOnDefault)
@@ -127,7 +127,11 @@ public class PlayerController : MonoBehaviour
                 teleportButton.SetActive(true);
             else teleportButton.SetActive(false);
         }
-        else teleportButton.SetActive(true);
+        else 
+        {
+            hitObject = null;
+            teleportButton.SetActive(true);
+        }
     }
 
     public void MoveForward()
@@ -138,14 +142,14 @@ public class PlayerController : MonoBehaviour
         // targetPosition = targetPosition + transform.forward * moveDistance;
         // Invoke(nameof(ResetAction), 0.1f);
 
-        if(hitObject)
+        if(hitObject && isOnDefault)
         {
             if (rotateButton.activeSelf)
                 rotateButton.SetActive(false);
 
             transform.position = hitObject.parent.position;
             transform.rotation = hitObject.parent.rotation;
-            Camera.main.transform.localEulerAngles = hitObject.parent.GetComponent<MovePoint>().cameraRotation;
+            cam.localEulerAngles = hitObject.parent.GetComponent<MovePoint>().cameraRotation;
             isOnDefault = false;
         }
         else if(!hitObject && !isOnDefault)
@@ -155,7 +159,7 @@ public class PlayerController : MonoBehaviour
             
             transform.position = defaultPoint.transform.position;
             transform.rotation = defaultPoint.transform.rotation;
-            Camera.main.transform.localEulerAngles = Vector3.zero;
+            cam.localEulerAngles = Vector3.zero;
             isOnDefault = true;
         }
     }
