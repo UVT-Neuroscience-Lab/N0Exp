@@ -86266,28 +86266,28 @@ MonoBehaviour:
     ClassId: 1
     GameObject: {fileID: 573212502}
     FlashSprite: {fileID: -54926291, guid: 1f04b8fcdfdb64c4f87fbade39ed5bce, type: 3}
-    DarkSprite: {fileID: -711394853, guid: 986f60d35593754479467995729ddf51, type: 3}
+    DarkSprite: {fileID: -752254116, guid: f5118fd7a61acc842b4dc2b3b07259df, type: 3}
     Rotate: 1
   ApplicationObjects:
   - ClassId: 1
     GameObject: {fileID: 201833179}
     FlashSprite: {fileID: -54926291, guid: 1f04b8fcdfdb64c4f87fbade39ed5bce, type: 3}
-    DarkSprite: {fileID: -711394853, guid: 986f60d35593754479467995729ddf51, type: 3}
+    DarkSprite: {fileID: -752254116, guid: f5118fd7a61acc842b4dc2b3b07259df, type: 3}
     Rotate: 0
   - ClassId: 2
     GameObject: {fileID: 1169623049}
     FlashSprite: {fileID: -54926291, guid: 1f04b8fcdfdb64c4f87fbade39ed5bce, type: 3}
-    DarkSprite: {fileID: -711394853, guid: 986f60d35593754479467995729ddf51, type: 3}
+    DarkSprite: {fileID: -752254116, guid: f5118fd7a61acc842b4dc2b3b07259df, type: 3}
     Rotate: 0
   - ClassId: 3
     GameObject: {fileID: 2143536832}
     FlashSprite: {fileID: -54926291, guid: 1f04b8fcdfdb64c4f87fbade39ed5bce, type: 3}
-    DarkSprite: {fileID: -711394853, guid: 986f60d35593754479467995729ddf51, type: 3}
+    DarkSprite: {fileID: -752254116, guid: f5118fd7a61acc842b4dc2b3b07259df, type: 3}
     Rotate: 0
   - ClassId: 4
     GameObject: {fileID: 463368708}
     FlashSprite: {fileID: -54926291, guid: 1f04b8fcdfdb64c4f87fbade39ed5bce, type: 3}
-    DarkSprite: {fileID: -711394853, guid: 986f60d35593754479467995729ddf51, type: 3}
+    DarkSprite: {fileID: -752254116, guid: f5118fd7a61acc842b4dc2b3b07259df, type: 3}
     Rotate: 0
 --- !u!4 &2870531123769072113
 Transform:
